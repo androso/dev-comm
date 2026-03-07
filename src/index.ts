@@ -1,7 +1,11 @@
 import { Elysia } from "elysia";
+import { db } from "../db";
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
-
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+try {
+	await db.execute("select 1");
+	const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+	console.log("App working on port: ", app.server?.port);
+} catch (e) {
+	console.error("Database connection failed: ", e);
+	process.exit(1);
+}
