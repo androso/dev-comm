@@ -2,6 +2,7 @@ import {
 	decimal,
 	integer,
 	pgTable,
+	primaryKey,
 	text,
 	timestamp,
 	uuid,
@@ -33,7 +34,23 @@ export const productsTable = pgTable("products", {
 		.$onUpdate(() => new Date()),
 	sku: varchar({ length: 50 }),
 	stock_quantity: integer().default(0),
+	category_id: uuid("category_id").references(() => productsCategories.id),
 });
+
+export const productProviders = pgTable(
+	"product_providers",
+	{
+		product_id: uuid()
+			.notNull()
+			.references(() => productsTable.id, { onDelete: "cascade" }),
+		provider_id: uuid()
+			.notNull()
+			.references(() => providersTable.id, { onDelete: "cascade" }),
+	},
+	(table) => ({
+		pk: primaryKey({ columns: [table.product_id, table.provider_id] }),
+	}),
+);
 
 export const productsCategories = pgTable("categories", {
 	id: uuid().defaultRandom().primaryKey(),
