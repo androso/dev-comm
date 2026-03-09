@@ -1,4 +1,5 @@
 import {
+	boolean,
 	decimal,
 	integer,
 	pgTable,
@@ -20,6 +21,8 @@ export const providersTable = pgTable("providers", {
 		.defaultNow()
 		.notNull()
 		.$onUpdate(() => new Date()),
+	email: varchar('email', { length: 255 }),
+	is_active: boolean("is_active").default(true)
 });
 
 export const productsTable = pgTable("products", {
@@ -35,6 +38,8 @@ export const productsTable = pgTable("products", {
 	sku: varchar({ length: 50 }),
 	stock_quantity: integer().default(0),
 	category_id: uuid("category_id").references(() => productsCategories.id),
+	image_url: varchar({length: 2048}),
+	is_active: boolean().default(true),
 });
 
 export const productProviders = pgTable(
