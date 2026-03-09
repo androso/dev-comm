@@ -16,13 +16,24 @@ export const providersTable = pgTable("providers", {
 	address: varchar({ length: 255 }),
 	phone: varchar({ length: 20 }),
 	description: text(),
-	created_at: timestamp().defaultNow().notNull(),
-	updated_at: timestamp()
+	createdAt: timestamp("created_at").defaultNow().notNull(),
+	updatedAt: timestamp("updated_at")
 		.defaultNow()
 		.notNull()
 		.$onUpdate(() => new Date()),
-	email: varchar('email', { length: 255 }),
-	is_active: boolean("is_active").default(true)
+	email: varchar("email", { length: 255 }),
+	isActive: boolean("is_active").default(true).notNull(),
+});
+
+export const productsCategoriesTable = pgTable("categories", {
+	id: uuid().defaultRandom().primaryKey(),
+	name: varchar({ length: 50 }).notNull().unique(),
+	description: text("description"),
+	createdAt: timestamp("created_at").defaultNow().notNull(),
+	updatedAt: timestamp("updated_at")
+		.defaultNow()
+		.notNull()
+		.$onUpdate(() => new Date()),
 });
 
 export const productsTable = pgTable("products", {
@@ -30,40 +41,27 @@ export const productsTable = pgTable("products", {
 	name: varchar({ length: 255 }).notNull(),
 	price: decimal({ precision: 10, scale: 2 }).notNull(),
 	description: text(),
-	created_at: timestamp().defaultNow().notNull(),
-	updated_at: timestamp()
+	createdAt: timestamp("created_at").defaultNow().notNull(),
+	updatedAt: timestamp("updated_at")
 		.defaultNow()
 		.notNull()
 		.$onUpdate(() => new Date()),
 	sku: varchar({ length: 50 }),
-	stock_quantity: integer().default(0),
-	category_id: uuid("category_id").references(() => productsCategories.id),
-	image_url: varchar({length: 2048}),
-	is_active: boolean().default(true),
+	stockQuantity: integer("stock_quantity").default(0),
+	categoryId: uuid("category_id").references(() => productsCategoriesTable.id),
+	imageUrl: varchar("image_url", { length: 2048 }),
+	isActive: boolean("is_active").default(true).notNull(),
 });
 
-export const productProviders = pgTable(
+export const productProvidersTable = pgTable(
 	"product_providers",
 	{
-		product_id: uuid()
+		productId: uuid("product_id")
 			.notNull()
 			.references(() => productsTable.id, { onDelete: "cascade" }),
-		provider_id: uuid()
+		providerId: uuid("provider_id")
 			.notNull()
 			.references(() => providersTable.id, { onDelete: "cascade" }),
 	},
-	(table) => ({
-		pk: primaryKey({ columns: [table.product_id, table.provider_id] }),
-	}),
+	(table) => [primaryKey({ columns: [table.productId, table.providerId] })],
 );
-
-export const productsCategories = pgTable("categories", {
-	id: uuid().defaultRandom().primaryKey(),
-	name: varchar({ length: 50 }).notNull().unique(),
-	description: text("description"),
-	created_at: timestamp().defaultNow().notNull(),
-	updated_at: timestamp()
-		.defaultNow()
-		.notNull()
-		.$onUpdate(() => new Date()),
-});
