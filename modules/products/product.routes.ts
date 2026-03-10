@@ -4,6 +4,9 @@ import { createProductSchema, productParamsSchema } from "./product.schema";
 import { productRepository } from "./product.repository";
 
 export const productRoutes = new Elysia({ prefix: "/products" })
+	.get("/", async () => {
+		
+	})
 	.get(
 		"/:id",
 		async ({ params: { id }, set }) => {

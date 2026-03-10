@@ -1,5 +1,9 @@
 import { productRepository } from "./product.repository";
-import { CreateProductPayload } from "./product.schema";
+import { CreateProductPayload, ProductQuery } from "./product.schema";
+
+const DEFAULT_FIELDS = ["id", "name", "price", "stockQuantity"];
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 10;
 
 export const productService = {
 	async create(data: CreateProductPayload) {
@@ -8,7 +12,7 @@ export const productService = {
 			price: String(data.price),
 		};
 		const product = await productRepository.create(newData);
-        
+
 		return {
 			...product,
 			price: parseFloat(product.price),
@@ -22,5 +26,16 @@ export const productService = {
 			price: parseFloat(product.price),
 			providers: product.productProvidersTable.map((pp) => pp.provider),
 		};
+	},
+	async getAll(query: ProductQuery) {
+		const params = {
+			fields: query.fields ?? DEFAULT_FIELDS,
+			limit: query.limit ?? DEFAULT_LIMIT,
+			page: query.page ?? DEFAULT_PAGE,
+			sort: query.sort,
+			name: query.name,
+		};
+
+		const res = await productRepository.findAll(params);
 	},
 };
