@@ -12,7 +12,7 @@ try {
 					success: false,
 					error: {
 						code: "BAD_REQUEST",
-						message: error.message
+						message: "Request validation failed"
 					}
 				}
 			}
