@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
 	boolean,
 	decimal,
@@ -64,4 +65,26 @@ export const productProvidersTable = pgTable(
 			.references(() => providersTable.id, { onDelete: "cascade" }),
 	},
 	(table) => [primaryKey({ columns: [table.productId, table.providerId] })],
+);
+
+export const productRelations = relations(productsTable, ({ many }) => {
+	return {
+		productProvidersTable: many(productProvidersTable),
+	};
+});
+
+export const productProvidersRelations = relations(
+	productProvidersTable,
+	({ one }) => {
+		return {
+			product: one(productsTable, {
+				fields: [productProvidersTable.productId],
+				references: [productsTable.id],
+			}),
+			provider: one(providersTable, {
+				fields: [productProvidersTable.providerId],
+				references: [providersTable.id],
+			}),
+		};
+	},
 );
