@@ -1,25 +1,46 @@
 import Elysia from "elysia";
 import { productService } from "./product.service";
-import { productParamsSchema } from "./product.schema";
+import { createProductSchema, productParamsSchema } from "./product.schema";
+import { productRepository } from "./product.repository";
 
-export const productRoutes = new Elysia({ prefix: "/products" }).get(
-	"/:id",
-	async ({ params: { id }, set }) => {
-		const product = await productService.getById(id);
-		if (!product) {
-			set.status = 404;
+export const productRoutes = new Elysia({ prefix: "/products" })
+	.get(
+		"/:id",
+		async ({ params: { id }, set }) => {
+			const product = await productService.getById(id);
+			if (!product) {
+				set.status = 404;
+				return {
+					success: false,
+					error: { code: "NOT_FOUND", message: "Product not found" },
+				};
+			}
+
 			return {
-				success: false,
-				error: { code: "NOT_FOUND", message: "Product not found" },
+				success: true,
+				data: product,
 			};
-		}
+		},
+		{
+			params: productParamsSchema,
+		},
+	)
+	.post(
+		"/",
+		async ({ body, set }) => {
+			const prod = await productRepository.create({
+				...body,
+				price: String(body.price),
+			});
 
-		return {
-			success: true,
-			data: product,
-		};
-	},
-	{
-		params: productParamsSchema,
-	},
-);
+			set.status = 201;
+
+			return {
+				success: true,
+				data: prod,
+			};
+		},
+		{
+			body: createProductSchema,
+		},
+	);
