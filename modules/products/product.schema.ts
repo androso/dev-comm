@@ -21,6 +21,9 @@ export const productQuerySchema = t.Object({
 	name: t.Optional(t.String()),
 	isActive: t.Optional(t.BooleanString()),
 	sort: t.Optional(t.String()),
+	"price[gte]": t.Optional(t.Numeric({ minimum: 0 })),
+	"price[lte]": t.Optional(t.Numeric({ minimum: 0 })),
+	"name[like]": t.Optional(t.String()),
 });
 
 export const productParamsSchema = t.Object({
