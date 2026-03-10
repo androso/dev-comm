@@ -38,6 +38,7 @@ export const productRepository = {
 						provider: true,
 					},
 				},
+				productsCategoriesTable: true
 			},
 		});
 

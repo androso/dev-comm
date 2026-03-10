@@ -67,9 +67,13 @@ export const productProvidersTable = pgTable(
 	(table) => [primaryKey({ columns: [table.productId, table.providerId] })],
 );
 
-export const productRelations = relations(productsTable, ({ many }) => {
+export const productRelations = relations(productsTable, ({ many, one }) => {
 	return {
 		productProvidersTable: many(productProvidersTable),
+		productsCategoriesTable: one(productsCategoriesTable, {
+			fields: [productsTable.categoryId],
+			references: [productsCategoriesTable.id],
+		}),
 	};
 });
 
