@@ -5,7 +5,7 @@ import { productRoutes } from "../modules/products/product.routes";
 try {
 	await db.execute("select 1");
 	const app = new Elysia()
-		.onError(({ code, error, set}) => {
+		.onError(({ code, set}) => {
 			if (code === "VALIDATION"){
 				set.status = 400
 				return {
