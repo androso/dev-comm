@@ -3,14 +3,18 @@ import { db } from "../../db";
 import { CreateProductPayload } from "./product.schema";
 import { productProvidersTable, productsTable } from "../../db/schema";
 
+type CreateProductRepoPayload = Omit<CreateProductPayload, "price"> & {
+	price: string;
+};
+
 export const productRepository = {
-	async create(data: CreateProductPayload) {
+	async create(data: CreateProductRepoPayload) {
 		const { providerIds, ...productData } = data;
 
 		return await db.transaction(async (tx) => {
 			const [product] = await tx
 				.insert(productsTable)
-				.values({ ...productData, price: String(productData.price) })
+				.values(productData)
 				.returning();
 
 			if (providerIds?.length) {

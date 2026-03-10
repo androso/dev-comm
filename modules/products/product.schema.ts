@@ -7,12 +7,12 @@ export const createProductSchema = t.Object({
 	sku: t.Optional(t.String()),
 	stockQuantity: t.Optional(t.Integer({ minimum: 0 })),
 	categoryId: t.Optional(t.String({ format: "uuid" })),
-    imageUrl: t.Optional(t.String({ maxLength: 2048 })),
+	imageUrl: t.Optional(t.String({ format: "uri", maxLength: 2048 })),
 	isActive: t.Optional(t.Boolean()),
-	providerIds: t.Optional(t.Array(t.String({ format: "uuid"})))
+	providerIds: t.Optional(t.Array(t.String({ format: "uuid" }))),
 });
 
-export const updateProductSchema = t.Partial(createProductSchema)
+export const updateProductSchema = t.Partial(createProductSchema);
 
 export const productQuerySchema = t.Object({
 	page: t.Optional(t.Numeric({ minimum: 1 })),
@@ -20,12 +20,12 @@ export const productQuerySchema = t.Object({
 	fields: t.Optional(t.String()),
 	name: t.Optional(t.String()),
 	isActive: t.Optional(t.BooleanString()),
-	sort: t.Optional(t.String())
-})
+	sort: t.Optional(t.String()),
+});
 
 export const productParamsSchema = t.Object({
-	id: t.String({ format: "uuid"})
-})
+	id: t.String({ format: "uuid" }),
+});
 
 export type CreateProductPayload = typeof createProductSchema.static;
 export type UpdateProductPayload = typeof updateProductSchema.static;
