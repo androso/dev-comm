@@ -23,7 +23,7 @@ export const providerParamsSchema = t.Object({
 })
 
 
-export type createProviderPayload = typeof createProviderSchema.static
-export type updateProviderPayload = typeof updateProviderSchema.static
+export type CreateProviderPayload = typeof createProviderSchema.static
+export type UpdateProviderPayload = typeof updateProviderSchema.static
 export type ProviderQuery = typeof providerQuerySchema.static
 export type ProviderParams = typeof providerParamsSchema.static

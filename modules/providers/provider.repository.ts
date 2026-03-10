@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../db";
 import { providersTable } from "../../db/schema";
-import { createProviderPayload } from "./provider.schema";
+import { CreateProviderPayload } from "./provider.schema";
 
 export const providerRepository = {
-	async create(data: createProviderPayload) {
+	async create(data: CreateProviderPayload) {
 		const [provider] = await db.insert(providersTable).values(data).returning();
 		return provider;
 	},
