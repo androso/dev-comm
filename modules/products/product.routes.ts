@@ -1,5 +1,6 @@
 import Elysia from "elysia";
 import { productService } from "./product.service";
+import { productParamsSchema } from "./product.schema";
 
 export const productRoutes = new Elysia({ prefix: "/products" }).get(
 	"/:id",
@@ -17,5 +18,8 @@ export const productRoutes = new Elysia({ prefix: "/products" }).get(
 			success: true,
 			data: product,
 		};
+	},
+	{
+		params: productParamsSchema,
 	},
 );
