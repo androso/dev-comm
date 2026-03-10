@@ -17,7 +17,6 @@ export const productService = {
 	async getById(id: string) {
 		const product = await productRepository.findById(id);
 		if (!product) return null;
-
 		return {
 			...product,
 			price: parseFloat(product.price),
