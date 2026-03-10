@@ -8,7 +8,7 @@ export const productService = {
 			price: String(data.price),
 		};
 		const product = await productRepository.create(newData);
-
+        
 		return {
 			...product,
 			price: parseFloat(product.price),

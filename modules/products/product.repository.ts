@@ -1,7 +1,11 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../db";
 import { CreateProductPayload } from "./product.schema";
-import { productProvidersTable, productsTable } from "../../db/schema";
+import {
+	productProvidersTable,
+	productsTable,
+	providersTable,
+} from "../../db/schema";
 
 type CreateProductRepoPayload = Omit<CreateProductPayload, "price"> & {
 	price: string;
@@ -11,7 +15,7 @@ export const productRepository = {
 	async create(data: CreateProductRepoPayload) {
 		const { providerIds, ...productData } = data;
 
-		return await db.transaction(async (tx) => {
+		const prod = await db.transaction(async (tx) => {
 			const [product] = await tx
 				.insert(productsTable)
 				.values(productData)
@@ -28,6 +32,22 @@ export const productRepository = {
 
 			return product;
 		});
+
+		
+		const result = await db.query.productsTable.findFirst({
+			where: eq(productsTable.id, prod.id),
+			with: {
+				productProvidersTable: {
+					with: {
+						provider: true,
+					},
+				},
+			},
+		});
+
+		if (!result) throw new Error("Product not found after creation!");
+
+		return result;
 	},
 	async findById(id: string) {
 		const product = await db.query.productsTable.findFirst({
@@ -38,7 +58,7 @@ export const productRepository = {
 						provider: true,
 					},
 				},
-				productsCategoriesTable: true
+				productsCategoriesTable: true,
 			},
 		});
 
