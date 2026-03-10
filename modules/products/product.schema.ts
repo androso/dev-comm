@@ -19,7 +19,8 @@ export const productQuerySchema = t.Object({
 	limit: t.Optional(t.Numeric({ minimum: 1, maximum: 100 })),
 	fields: t.Optional(t.String()),
 	name: t.Optional(t.String()),
-	isActive: t.Optional(t.BooleanString())
+	isActive: t.Optional(t.BooleanString()),
+	sort: t.Optional(t.String())
 })
 
 export const productParamsSchema = t.Object({
