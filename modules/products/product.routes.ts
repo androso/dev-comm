@@ -45,9 +45,9 @@ export const productRoutes = new Elysia({ prefix: "/products" })
 	.post(
 		"/",
 		async ({ body, set }) => {
-			const prod = await productRepository.create({
+			const prod = await productService.create({
 				...body,
-				price: String(body.price),
+				price: body.price,
 			});
 
 			set.status = 201;
@@ -60,4 +60,9 @@ export const productRoutes = new Elysia({ prefix: "/products" })
 		{
 			body: createProductSchema,
 		},
-	);
+	)
+	.delete("/:id", async ({ params: { id } }) => {
+		await productService.delete(id);
+
+		return new Response(null, { status: 204 });
+	});

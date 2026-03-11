@@ -1,3 +1,4 @@
+import { NotFoundError } from "elysia";
 import { productRepository } from "./product.repository";
 import { CreateProductPayload, ProductQuery } from "./product.schema";
 
@@ -6,6 +7,14 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
 
 export const productService = {
+	async delete(id: string) {
+		const deleted = await productRepository.delete(id)
+		if (!deleted){
+			throw new NotFoundError("Product not found")
+		}
+
+		return deleted;
+	},
 	async create(data: CreateProductPayload) {
 		const newData = {
 			...data,

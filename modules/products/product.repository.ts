@@ -70,6 +70,11 @@ const buildFilters = (filters: ProductFilters | undefined) => {
 };
 
 export const productRepository = {
+	async delete(id: string) {
+		const [deleted] = await db.delete(productsTable).where(eq(productsTable.id, id)).returning()
+
+		return deleted
+	},
 	async findAll({ fields, limit, page, sort, filters }: FindAllRepoParams) {
 		const offset = (page - 1) * limit;
 
