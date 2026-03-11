@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, status } from "elysia";
 import { db } from "../db";
 import { productRoutes } from "../modules/products/product.routes";
 import { providerRoutes } from "../modules/providers/provider.routes";
@@ -6,18 +6,50 @@ import { providerRoutes } from "../modules/providers/provider.routes";
 try {
 	await db.execute("select 1");
 	const app = new Elysia()
-		.onError(({ code, set, error }) => {
-			if (code === "VALIDATION") {
-				set.status = 400;
-				console.error(error);
-				return {
-					success: false,
-					error: {
-						code: "BAD_REQUEST",
-						message: "Request validation failed",
-					},
-				};
+		.onError(({ code, path, error, request }) => {
+			switch (code) {
+				case "VALIDATION":
+					return status(400, {
+						success: false,
+						error: {
+							code: "BAD_REQUEST",
+							message: "Request validation failed",
+						},
+					});
+				case "NOT_FOUND":
+					return status(404, {
+						success: false,
+						error: {
+							code: "NOT_FOUND",
+							message: error.message || "Resource not found",
+						},
+					});
+				case "PARSE":
+					return status(400, {
+						success: false,
+						error: {
+							code: "BAD_REQUEST",
+							message: "Malformed request body",
+						},
+					});
+				default:
+					console.error("Unhandled error", {
+						code,
+						path,
+						method: request.method,
+						message: error instanceof Error ? error.message : String(error),
+						error,
+					});
+
+					return status(500, {
+						success: false,
+						error: {
+							code: "INTERNAL_SERVER_ERROR",
+							message: "Internal server error",
+						},
+					});
 			}
+
 			if (error) {
 				console.error(error);
 			}
