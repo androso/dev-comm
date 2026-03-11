@@ -7,4 +7,9 @@ export const providerService = {
 
 		return provider;
 	},
+	async getById(id: string) {
+		const provider = await providerRepository.findById(id);
+		
+		return provider
+	}
 };
