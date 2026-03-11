@@ -53,7 +53,6 @@ export const providerRoutes = new Elysia({ prefix: "/providers" })
 	.patch(
 		"/:id",
 		async ({ params: { id }, body, set }) => {
-			console.log("patch")
 			const res = await providerService.updateById(id, body);
 			set.status = 200;
 			return {
@@ -62,4 +61,14 @@ export const providerRoutes = new Elysia({ prefix: "/providers" })
 			};
 		},
 		{ body: updateProviderSchema },
+	)
+	.delete(
+		"/:id",
+		async ({ params: { id } }) => {
+			const deleted = await providerService.delete(id);
+			return new Response(null, { status: 204 });
+		},
+		{
+			params: providerParamsSchema,
+		},
 	);

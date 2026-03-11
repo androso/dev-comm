@@ -67,6 +67,14 @@ export const providerRepository = {
 
 		return updated;
 	},
+	async deleteById(id: string) {
+		const deleted = await db
+			.delete(providersTable)
+			.where(eq(providersTable.id, id))
+			.returning();
+
+		return deleted;
+	},
 	async create(data: CreateProviderPayload) {
 		const [provider] = await db.insert(providersTable).values(data).returning();
 		return provider;
