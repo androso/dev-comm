@@ -32,4 +32,12 @@ export const providerRoutes = new Elysia({ prefix: "/providers" })
 		{
 			params: providerParamsSchema,
 		},
-	);
+	)
+	.get("/", async ({ query }) => {
+		const res = await providerService.getAll(query);
+
+		return {
+			success: true,
+			...res,
+		};
+	});
