@@ -1,5 +1,10 @@
 import Elysia from "elysia";
-import { createProviderSchema, providerParamsSchema } from "./provider.schema";
+import {
+	createProviderSchema,
+	providerParamsSchema,
+	providerQuerySchema,
+	updateProviderSchema,
+} from "./provider.schema";
 import { providerService } from "./provider.service";
 
 export const providerRoutes = new Elysia({ prefix: "/providers" })
@@ -33,11 +38,28 @@ export const providerRoutes = new Elysia({ prefix: "/providers" })
 			params: providerParamsSchema,
 		},
 	)
-	.get("/", async ({ query }) => {
-		const res = await providerService.getAll(query);
+	.get(
+		"/",
+		async ({ query }) => {
+			const res = await providerService.getAll(query);
 
-		return {
-			success: true,
-			...res,
-		};
-	});
+			return {
+				success: true,
+				...res,
+			};
+		},
+		{ query: providerQuerySchema },
+	)
+	.patch(
+		"/:id",
+		async ({ params: { id }, body, set }) => {
+			console.log("patch")
+			const res = await providerService.updateById(id, body);
+			set.status = 200;
+			return {
+				success: true,
+				data: res,
+			};
+		},
+		{ body: updateProviderSchema },
+	);

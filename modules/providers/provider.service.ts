@@ -1,6 +1,6 @@
 import { NotFoundError } from "elysia";
 import { providerRepository } from "./provider.repository";
-import { CreateProviderPayload, ProviderQuery } from "./provider.schema";
+import { CreateProviderPayload, ProviderQuery, UpdateProviderPayload } from "./provider.schema";
 
 const DEFAULT_FIELDS = "id,name,address,email";
 const DEFAULT_PAGE = 1;
@@ -35,4 +35,9 @@ export const providerService = {
 
 		return res;
 	},
+	async updateById(id: string, data: UpdateProviderPayload) {
+		const result = await providerRepository.updateById(id, data)
+
+		return result
+	}
 };

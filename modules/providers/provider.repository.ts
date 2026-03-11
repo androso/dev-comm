@@ -1,7 +1,11 @@
 import { and, asc, desc, eq, getTableColumns, like, sql } from "drizzle-orm";
 import { db } from "../../db";
 import { providersTable } from "../../db/schema";
-import { CreateProviderPayload, ProviderQuery } from "./provider.schema";
+import {
+	CreateProviderPayload,
+	ProviderQuery,
+	UpdateProviderPayload,
+} from "./provider.schema";
 
 type ProviderFilters = {
 	nameLike?: string;
@@ -54,6 +58,15 @@ const buildFilters = (filters: ProviderFilters | undefined) => {
 };
 
 export const providerRepository = {
+	async updateById(id: string, data: UpdateProviderPayload) {
+		const [updated] = await db
+			.update(providersTable)
+			.set(data)
+			.where(eq(providersTable.id, id))
+			.returning();
+
+		return updated;
+	},
 	async create(data: CreateProviderPayload) {
 		const [provider] = await db.insert(providersTable).values(data).returning();
 		return provider;
