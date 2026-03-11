@@ -5,7 +5,6 @@ import {
 	productParamsSchema,
 	productQuerySchema,
 } from "./product.schema";
-import { productRepository } from "./product.repository";
 
 export const productRoutes = new Elysia({ prefix: "/products" })
 	.get(
@@ -65,4 +64,7 @@ export const productRoutes = new Elysia({ prefix: "/products" })
 		await productService.delete(id);
 
 		return new Response(null, { status: 204 });
+	})
+	.patch("/:id", async({ params: { id } }) => {
+		
 	});

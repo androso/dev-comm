@@ -1,10 +1,28 @@
-import { and, asc, desc, eq, getTableColumns, gte, like, lte, sql } from "drizzle-orm";
+import {
+	and,
+	asc,
+	desc,
+	eq,
+	getTableColumns,
+	gte,
+	like,
+	lte,
+	sql,
+} from "drizzle-orm";
 import { db } from "../../db";
-import { CreateProductPayload, ProductQuery } from "./product.schema";
+import {
+	CreateProductPayload,
+	ProductQuery,
+	UpdateProductPayload,
+} from "./product.schema";
 import { productProvidersTable, productsTable } from "../../db/schema";
 
 type CreateProductRepoPayload = Omit<CreateProductPayload, "price"> & {
 	price: string;
+};
+
+type UpdateProductRepoPayload = Omit<UpdateProductPayload, "price" | "providerIds"> & {
+	price?: string;
 };
 
 type ProductFilters = {
@@ -71,9 +89,21 @@ const buildFilters = (filters: ProductFilters | undefined) => {
 
 export const productRepository = {
 	async delete(id: string) {
-		const [deleted] = await db.delete(productsTable).where(eq(productsTable.id, id)).returning()
+		const [deleted] = await db
+			.delete(productsTable)
+			.where(eq(productsTable.id, id))
+			.returning();
 
-		return deleted
+		return deleted;
+	},
+	async updateById(id: string, data: UpdateProductRepoPayload) {
+		const [updated] = await db
+			.update(productsTable)
+			.set(data)
+			.where(eq(productsTable.id, id))
+			.returning();
+
+		return updated ?? null;
 	},
 	async findAll({ fields, limit, page, sort, filters }: FindAllRepoParams) {
 		const offset = (page - 1) * limit;
