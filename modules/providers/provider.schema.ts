@@ -1,8 +1,8 @@
 import { t } from "elysia";
 
 export const createProviderSchema = t.Object({
-	name: t.String({ minLength: 1 }),
-	address: t.Optional(t.String({ minLength: 1 })),
+	name: t.String({ minLength: 1, maxLength: 255 }),
+	address: t.Optional(t.String({ minLength: 1, maxLength: 255 })),
 	phone: t.Optional(t.String({ minLength: 1, maxLength: 20 })),
 	description: t.Optional(t.String()),
 	email: t.Optional(

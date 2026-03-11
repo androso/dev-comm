@@ -1,3 +1,4 @@
+import { NotFoundError } from "elysia";
 import { providerRepository } from "./provider.repository";
 import { CreateProviderPayload } from "./provider.schema";
 
@@ -9,7 +10,9 @@ export const providerService = {
 	},
 	async getById(id: string) {
 		const provider = await providerRepository.findById(id);
-		
+		if (!provider) {
+			throw new NotFoundError("Provider not found!")
+		}
 		return provider
 	}
 };
