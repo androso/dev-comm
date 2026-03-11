@@ -21,7 +21,10 @@ type CreateProductRepoPayload = Omit<CreateProductPayload, "price"> & {
 	price: string;
 };
 
-type UpdateProductRepoPayload = Omit<UpdateProductPayload, "price" | "providerIds"> & {
+type UpdateProductRepoPayload = Omit<
+	UpdateProductPayload,
+	"price" | "providerIds"
+> & {
 	price?: string;
 };
 
@@ -96,14 +99,54 @@ export const productRepository = {
 
 		return deleted;
 	},
-	async updateById(id: string, data: UpdateProductRepoPayload) {
-		const [updated] = await db
-			.update(productsTable)
-			.set(data)
-			.where(eq(productsTable.id, id))
-			.returning();
+	async updateById(
+		id: string,
+		data: UpdateProductRepoPayload,
+		providerIds?: string[],
+	) {
+		const updated = await db.transaction(async (tx) => {
+			const [updated] = await tx
+				.update(productsTable)
+				.set(data)
+				.where(eq(productsTable.id, id))
+				.returning();
 
-		return updated ?? null;
+			if (providerIds != null && updated) {
+				await tx
+					.delete(productProvidersTable)
+					.where(eq(productProvidersTable.productId, updated.id));
+
+				if (providerIds.length > 0) {
+					const newIds = [...new Set(providerIds)];
+					await tx
+						.insert(productProvidersTable)
+						.values(
+							newIds.map((id) => ({ productId: updated.id, providerId: id })),
+						);
+				}
+			}
+
+			return updated;
+		});
+
+
+		if (!updated) {
+			return null
+		}
+
+		const result = await db.query.productsTable.findFirst({
+			where: eq(productsTable.id, updated.id),
+			with: {
+				productProvidersTable: {
+					with: {
+						provider: true,
+					},
+				},
+				productsCategoriesTable: true,
+			},
+		});
+
+		return result;
 	},
 	async findAll({ fields, limit, page, sort, filters }: FindAllRepoParams) {
 		const offset = (page - 1) * limit;
@@ -160,6 +203,7 @@ export const productRepository = {
 						provider: true,
 					},
 				},
+				productsCategoriesTable: true
 			},
 		});
 

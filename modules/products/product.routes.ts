@@ -4,6 +4,7 @@ import {
 	createProductSchema,
 	productParamsSchema,
 	productQuerySchema,
+	updateProductSchema,
 } from "./product.schema";
 
 export const productRoutes = new Elysia({ prefix: "/products" })
@@ -65,6 +66,20 @@ export const productRoutes = new Elysia({ prefix: "/products" })
 
 		return new Response(null, { status: 204 });
 	})
-	.patch("/:id", async({ params: { id } }) => {
-		
-	});
+	.patch(
+		"/:id",
+		async ({ params: { id }, body, set }) => {
+			const product = await productService.updateById(id, body);
+
+			set.status = 200;
+
+			return {
+				success: true,
+				data: product,
+			};
+		},
+		{
+			params: productParamsSchema,
+			body: updateProductSchema,
+		},
+	);
