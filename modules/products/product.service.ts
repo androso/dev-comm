@@ -38,6 +38,7 @@ export const productService = {
 				priceGte: query["price[gte]"],
 				priceLte: query["price[lte]"],
 				nameLike: query["name[like]"],
+				isActive: query.isActive
 			},
 		};
 
