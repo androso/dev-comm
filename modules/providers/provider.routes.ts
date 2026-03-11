@@ -60,7 +60,7 @@ export const providerRoutes = new Elysia({ prefix: "/providers" })
 				data: res,
 			};
 		},
-		{ body: updateProviderSchema },
+		{ body: updateProviderSchema, params: providerParamsSchema },
 	)
 	.delete(
 		"/:id",

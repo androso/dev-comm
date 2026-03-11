@@ -42,11 +42,16 @@ export const providerService = {
 	async updateById(id: string, data: UpdateProviderPayload) {
 		const result = await providerRepository.updateById(id, data);
 
+		if (!result) {
+			throw new NotFoundError("Provider not found.");
+		}
 		return result;
 	},
 	async delete(id: string) {
 		const deleted = await providerRepository.deleteById(id);
-
+		if (!deleted) {
+			throw new NotFoundError("Provider not found")
+		}
 		return deleted;
 	},
 };

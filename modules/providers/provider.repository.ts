@@ -65,13 +65,17 @@ export const providerRepository = {
 			.where(eq(providersTable.id, id))
 			.returning();
 
+		if (!updated) return null;
+
 		return updated;
 	},
 	async deleteById(id: string) {
-		const deleted = await db
+		const [deleted] = await db
 			.delete(providersTable)
 			.where(eq(providersTable.id, id))
 			.returning();
+
+		if (!deleted) return null;
 
 		return deleted;
 	},
@@ -94,18 +98,19 @@ export const providerRepository = {
 		filters,
 	}: FindAllProvidersParams) {
 		const offset = (page - 1) * limit;
-
+		const newFilters = buildFilters(filters);
 		const rows = await db
 			.select(pickFields(fields))
 			.from(providersTable)
-			.where(buildFilters(filters))
+			.where(newFilters)
 			.orderBy(...buildSort(sort))
 			.limit(limit)
 			.offset(offset);
 
 		let [{ count }] = await db
 			.select({ count: sql<number>`count(*)` })
-			.from(providersTable);
+			.from(providersTable)
+			.where(newFilters);
 
 		count = Number(count);
 
