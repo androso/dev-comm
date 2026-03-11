@@ -129,9 +129,8 @@ export const productRepository = {
 			return updated;
 		});
 
-
 		if (!updated) {
-			return null
+			return null;
 		}
 
 		const result = await db.query.productsTable.findFirst({
@@ -151,17 +150,20 @@ export const productRepository = {
 	async findAll({ fields, limit, page, sort, filters }: FindAllRepoParams) {
 		const offset = (page - 1) * limit;
 
+		const newFilters = buildFilters(filters);
 		const rows = await db
 			.select(pickFields(fields))
 			.from(productsTable)
-			.where(buildFilters(filters))
+			.where(newFilters)
 			.orderBy(...buildSort(sort))
 			.limit(limit)
 			.offset(offset);
 
 		let [{ count }] = await db
 			.select({ count: sql<number>`count(*)` })
-			.from(productsTable);
+			.from(productsTable)
+			.where(newFilters);
+
 		count = Number(count);
 
 		return {
@@ -203,7 +205,7 @@ export const productRepository = {
 						provider: true,
 					},
 				},
-				productsCategoriesTable: true
+				productsCategoriesTable: true,
 			},
 		});
 
