@@ -1,12 +1,26 @@
 import Elysia from "elysia";
 import { productService } from "./product.service";
-import { createProductSchema, productParamsSchema } from "./product.schema";
+import {
+	createProductSchema,
+	productParamsSchema,
+	productQuerySchema,
+} from "./product.schema";
 import { productRepository } from "./product.repository";
 
 export const productRoutes = new Elysia({ prefix: "/products" })
-	.get("/", async () => {
-		
-	})
+	.get(
+		"/",
+		async ({ query }) => {
+			const result = await productService.getAll(query);
+			return {
+				success: true,
+				...result,
+			};
+		},
+		{
+			query: productQuerySchema,
+		},
+	)
 	.get(
 		"/:id",
 		async ({ params: { id }, set }) => {

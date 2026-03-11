@@ -16,26 +16,6 @@ try {
 					}
 				}
 			}
-
-			if (set.status && set.status !== 200) {
-				return {
-					succes: false,
-					error: {
-						code,
-						message: "Request failed" 
-					}
-				}
-			}
-
-			set.status = 500
-			
-			return {
-				success: false,
-				error: {
-					code: "INTERNAL_SERVER_ERROR",
-					message: "Unexpected error"
-				}
-			}
 		})
 		.use(productRoutes);
 

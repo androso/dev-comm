@@ -1,7 +1,7 @@
 import { productRepository } from "./product.repository";
 import { CreateProductPayload, ProductQuery } from "./product.schema";
 
-const DEFAULT_FIELDS = ["id", "name", "price", "stockQuantity"];
+const DEFAULT_FIELDS = "id,name,price,stockQuantity";
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
 
@@ -29,13 +29,19 @@ export const productService = {
 	},
 	async getAll(query: ProductQuery) {
 		const params = {
-			fields: query.fields ?? DEFAULT_FIELDS,
+			fields: (query.fields ?? DEFAULT_FIELDS).split(","),
 			limit: query.limit ?? DEFAULT_LIMIT,
 			page: query.page ?? DEFAULT_PAGE,
 			sort: query.sort,
-			name: query.name,
+			filters: {
+				name: query.name,
+				priceGte: query["price[gte]"],
+				priceLte: query["price[lte]"],
+				nameLike: query["name[like]"],
+			},
 		};
 
 		const res = await productRepository.findAll(params);
+		return res
 	},
 };
