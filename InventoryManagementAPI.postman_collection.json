@@ -1,0 +1,655 @@
+{
+  "info": {
+    "_postman_id": "8e1b5141-0751-4599-b361-4d9b51ccef82",
+    "name": "InventoryManagementAPI",
+    "description": "## Inventory management API\n\nREST API for managing products, providers, and categories. Built with Bun, Elysia, Drizzle ORM, and PostgreSQL.\n\n## Base URL\n\nSet the `base_url` collection variable to your API root:\n\n- Local: `http://localhost:3000/api/v1`\n    \n\n## Authentication\n\nNo authentication required.\n\n## Resources\n\n**Products** — CRUD operations for products. Supports provider associations via `providerIds` and category assignment via `categoryId`.\n\n**Providers** — CRUD operations for providers (suppliers).\n\n**Categories** — CRUD operations for product categories.\n\n## Query Features (GET list endpoints)\n\nAll list endpoints (`GET /products`, `GET /providers`, `GET /categories`) support:\n\n- **Pagination**: `?page=1&limit=20`\n    \n- **Field selection**: `?fields=id,name,price`\n    \n- **Sorting**: `?sort=name` (asc) or `?sort=-price` (desc). Comma-separated for multiple: `?sort=name,-price`\n    \n- **Filtering**: exact match `?name=laptop`, partial match `?name[like]=lap`, range `?price[gte]=100&price[lte]=500`, boolean `?isActive=true`\n    \n\n## Response Format\n\nAll responses follow a consistent envelope:\n\n**Success (single resource):**\n\n``` json\n{ \"success\": true, \"data\": { ... } }\n\n ```\n\n**Success (list):**\n\n``` json\n{ \"success\": true, \"data\": [...], \"meta\": { \"page\": 1, \"limit\": 10, \"offset\": 0, \"totalItems\": 50, \"totalPages\": 5 } }\n\n ```\n\n**Error:**\n\n``` json\n{ \"success\": false, \"error\": { \"code\": \"NOT_FOUND\", \"message\": \"Product not found\" } }\n\n ```\n\n## Status Codes\n\n- `200` — Successful GET, PATCH\n    \n- `201` — Successful POST\n    \n- `204` — Successful DELETE\n    \n- `400` — Bad request / invalid input\n    \n- `404` — Resource not found\n    \n- `422` — Validation error\n    \n- `500` — Internal server error\n    \n\n---",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "18898473",
+    "_collection_link": "https://go.postman.co/collection/18898473-8e1b5141-0751-4599-b361-4d9b51ccef82?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get a product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products/0b0435ac-c841-43de-ab31-8fe6442652af",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "0b0435ac-c841-43de-ab31-8fe6442652af"
+              ]
+            },
+            "description": "Retrieve a single product by UUID. Returns the product with its associated providers and category."
+          },
+          "response": []
+        },
+        {
+          "name": "Get products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "price[gte]",
+                  "value": "11",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "price[lte]",
+                  "value": "11",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "fields",
+                  "value": "id,name",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "name[like]",
+                  "value": "test",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve a paginated list of products. Supports field selection, sorting, and filtering by name, price range, and active status via query parameters."
+          },
+          "response": []
+        },
+        {
+          "name": "Create product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successful POST request\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mechanical Keyboard K87\",\n  \"price\": 129.99,\n  \"description\": \"Compact wireless mechanical keyboard\",\n  \"sku\": \"K87-WL-BLK\",\n  \"stockQuantity\": 25,\n  \"categoryId\": \"0a5f7683-11c6-42f1-a188-04ef2790e95e\",\n  \"imageUrl\": \"https://example.com/images/k87.jpg\",\n  \"isActive\": true,\n  \"providerIds\": [\"d9a8e19c-62c1-4257-8d8a-f33f31159b2b\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ]
+            },
+            "description": "Create a new product. Optionally assign a category via `categoryId` and associate providers via `providerIds` array."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successful DELETE request\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202, 204]);",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products/1b143891-4a08-4abf-86a4-f546fe445d3b",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "1b143891-4a08-4abf-86a4-f546fe445d3b"
+              ]
+            },
+            "description": "Delete a product by UUID. Returns 204 No Content on success."
+          },
+          "response": []
+        },
+        {
+          "name": "Update a product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successful PUT request\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"name\": \"testing patch\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products/0b0435ac-c841-43de-ab31-8fe6442652af",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "0b0435ac-c841-43de-ab31-8fe6442652af"
+              ]
+            },
+            "description": "Partially update a product by UUID. Any subset of fields can be sent. Provider associations can be replaced by sending a new `providerIds` array"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Providers",
+      "item": [
+        {
+          "name": "Create provider",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Acme Supplies\",\n  \"address\": \"123 Main St\",\n  \"phone\": \"+1-555-1234\",\n  \"description\": \"Industrial supplier\",\n  \"email\": \"sales@acme.com\",\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/providers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers"
+              ]
+            },
+            "description": "Create a new provider"
+          },
+          "response": []
+        },
+        {
+          "name": "Get provider",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/providers/d1a111b5-70e7-4852-847d-c1fe5cf0b08b",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "d1a111b5-70e7-4852-847d-c1fe5cf0b08b"
+              ]
+            },
+            "description": "Retrieve a single provider by UUID."
+          },
+          "response": []
+        },
+        {
+          "name": "Get providers",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/providers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "fields",
+                  "value": "id,name",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "name[like]",
+                  "value": "test",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve a paginated list of providers. Supports field selection, sorting, and filtering by name and active status via query parameters."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete a provider",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/providers/d1a111b5-70e7-4852-847d-c1fe5cf0b08b",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "d1a111b5-70e7-4852-847d-c1fe5cf0b08b"
+              ]
+            },
+            "description": "Delete a provider by UUID. Returns 204 No Content on success"
+          },
+          "response": []
+        },
+        {
+          "name": "Update a provider",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"provider name test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/providers/d9a8e19c-62c1-4257-8d8a-f33f31159b2b",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "providers",
+                "d9a8e19c-62c1-4257-8d8a-f33f31159b2b"
+              ]
+            },
+            "description": "Partially update a provider by UUID. Any subset of fields can be sent."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Create category",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Electronics2\",\n  \"description\": \"Electronic devices and accessories\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "description": "Create a new category. Name must be unique"
+          },
+          "response": []
+        },
+        {
+          "name": "Get category",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/categories/66c0cdaf-7476-4102-9d71-59add72eb3f5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "66c0cdaf-7476-4102-9d71-59add72eb3f5"
+              ]
+            },
+            "description": "Retrieve a single category by UUID."
+          },
+          "response": []
+        },
+        {
+          "name": "Get categories",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "fields",
+                  "value": "id,name",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "name[like]",
+                  "value": "test",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve a paginated list of categories. Supports field selection, sorting, and filtering by name via query parameters."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete a category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/categories/66c0cdaf-7476-4102-9d71-59add72eb3f5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "66c0cdaf-7476-4102-9d71-59add72eb3f5"
+              ]
+            },
+            "description": "Delete a category by UUID. Returns 204 No Content on success."
+          },
+          "response": []
+        },
+        {
+          "name": "Update a category",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"category modified\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/categories/0a5f7683-11c6-42f1-a188-04ef2790e95e",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "0a5f7683-11c6-42f1-a188-04ef2790e95e"
+              ]
+            },
+            "description": "Partially update a category by UUID. Any subset of fields can be sent."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api/v1"
+    }
+  ]
+}
