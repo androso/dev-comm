@@ -42,3 +42,7 @@ package-lock.json
 **/*.bun
 
 .env
+
+# frontend
+frontend/dist
+frontend/node_modules
