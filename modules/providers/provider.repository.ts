@@ -9,6 +9,7 @@ import {
 } from "./provider.schema";
 
 type ProviderFilters = {
+	name?: string;
 	nameLike?: string;
 	isActive?: boolean;
 };
@@ -68,6 +69,9 @@ const buildFilters = (filters: ProviderFilters | undefined) => {
 
 	const conditions = [];
 
+	if (filters.name) {
+		conditions.push(eq(providersTable.name, filters.name));
+	}
 	if (filters.nameLike) {
 		conditions.push(like(providersTable.name, `%${filters.nameLike}%`));
 	}

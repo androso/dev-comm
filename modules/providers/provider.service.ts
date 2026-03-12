@@ -30,6 +30,7 @@ export const providerService = {
 			limit: query.limit ?? DEFAULT_LIMIT,
 			sort: query.sort,
 			filters: {
+				name: query.name,
 				nameLike: query["name[like]"],
 				isActive: query.isActive,
 			},

@@ -47,6 +47,7 @@ export const categoryService = {
 			page: query.page ?? DEFAULT_PAGE,
 			sort: query.sort,
 			filters: {
+				name: query.name,
 				nameLike: query["name[like]"],
 			},
 		};

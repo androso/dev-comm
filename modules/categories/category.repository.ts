@@ -10,6 +10,7 @@ import {
 import { BadRequestError } from "../../common/errors";
 
 type CategoryFilters = {
+	name?: string;
 	nameLike?: string;
 };
 
@@ -68,6 +69,9 @@ const buildFilters = (filters: CategoryFilters | undefined) => {
 
 	const conditions = [];
 
+	if (filters.name) {
+		conditions.push(eq(productsCategoriesTable.name, filters.name));
+	}
 	if (filters.nameLike) {
 		conditions.push(
 			like(productsCategoriesTable.name, `%${filters.nameLike}%`),

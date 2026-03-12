@@ -12,6 +12,7 @@ export const categoryQuerySchema = t.Object({
 	limit: t.Optional(t.Numeric({ minimum: 1, maximum: 100 })),
 	fields: t.Optional(t.String()),
 	sort: t.Optional(t.String()),
+	name: t.Optional(t.String()),
 	"name[like]": t.Optional(t.String()),
 });
 
