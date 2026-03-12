@@ -192,6 +192,7 @@ export const productRepository = {
 			meta: {
 				page,
 				limit,
+				offset,
 				totalItems: count,
 				totalPages: Math.ceil(count / limit),
 			},

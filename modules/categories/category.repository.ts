@@ -123,6 +123,7 @@ export const categoryRepository = {
 			meta: {
 				page,
 				limit,
+				offset,
 				totalItems: count,
 				totalPages: Math.ceil(count / limit),
 			},
