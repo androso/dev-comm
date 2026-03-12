@@ -5,6 +5,14 @@ export const errorResponseSchema = t.Object({
 	error: t.Object({
 		code: t.String(),
 		message: t.String(),
+		details: t.Optional(
+			t.Array(
+				t.Object({
+					field: t.String(),
+					message: t.String(),
+				}),
+			),
+		),
 	}),
 });
 

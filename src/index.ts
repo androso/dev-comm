@@ -1,4 +1,5 @@
-import { Elysia, status } from "elysia";
+import { Elysia, ValidationError, status } from "elysia";
+import type { ErrorDetail } from "../common/errors";
 import { swagger } from "@elysiajs/swagger";
 import { db } from "../db";
 import { productRoutes } from "../modules/products/product.routes";
@@ -38,14 +39,28 @@ try {
 		)
 		.onError(({ code, path, error, request }) => {
 			switch (code) {
-				case "VALIDATION":
+				case "VALIDATION": {
+					const details: ErrorDetail[] = [];
+
+					if (error instanceof ValidationError) {
+						for (const err of error.all) {
+							const field = err.path.replace(/^\//, "") || error.type;
+							details.push({
+								field,
+								message: err.summary ?? err.message,
+							});
+						}
+					}
+
 					return status(422, {
 						success: false,
 						error: {
-							code: "BAD_REQUEST",
+							code: "VALIDATION_ERROR",
 							message: "Request validation failed",
+							...(details.length > 0 && { details }),
 						},
 					});
+				}
 				case "NOT_FOUND":
 					return status(404, {
 						success: false,
@@ -69,6 +84,7 @@ try {
 							error: {
 								code: "BAD_REQUEST",
 								message: error.message,
+								...(error.details && { details: error.details }),
 							},
 						});
 					}
