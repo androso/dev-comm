@@ -61,11 +61,17 @@ export const productRoutes = new Elysia({ prefix: "/products" })
 			body: createProductSchema,
 		},
 	)
-	.delete("/:id", async ({ params: { id } }) => {
-		await productService.delete(id);
+	.delete(
+		"/:id",
+		async ({ params: { id } }) => {
+			await productService.delete(id);
 
-		return new Response(null, { status: 204 });
-	})
+			return new Response(null, { status: 204 });
+		},
+		{
+			params: productParamsSchema,
+		},
+	)
 	.patch(
 		"/:id",
 		async ({ params: { id }, body, set }) => {

@@ -11,7 +11,7 @@ try {
 		.onError(({ code, path, error, request }) => {
 			switch (code) {
 				case "VALIDATION":
-					return status(400, {
+					return status(422, {
 						success: false,
 						error: {
 							code: "BAD_REQUEST",
