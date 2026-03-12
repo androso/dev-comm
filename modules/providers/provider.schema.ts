@@ -26,6 +26,20 @@ export const providerParamsSchema = t.Object({
 	id: t.String({ format: "uuid" }),
 });
 
+export const providerResponseDataSchema = t.Object({
+	id: t.String({ format: "uuid" }),
+	name: t.String(),
+	address: t.Nullable(t.String()),
+	phone: t.Nullable(t.String()),
+	description: t.Nullable(t.String()),
+	email: t.Nullable(t.String()),
+	isActive: t.Boolean(),
+	createdAt: t.Date(),
+	updatedAt: t.Date(),
+});
+
+export const providerListItemSchema = t.Partial(providerResponseDataSchema);
+
 export type CreateProviderPayload = typeof createProviderSchema.static;
 export type UpdateProviderPayload = typeof updateProviderSchema.static;
 export type ProviderQuery = typeof providerQuerySchema.static;

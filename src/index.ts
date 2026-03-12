@@ -1,4 +1,5 @@
 import { Elysia, status } from "elysia";
+import { swagger } from "@elysiajs/swagger";
 import { db } from "../db";
 import { productRoutes } from "../modules/products/product.routes";
 import { providerRoutes } from "../modules/providers/provider.routes";
@@ -13,6 +14,28 @@ try {
 		.use(categoryRoutes);
 
 	const app = new Elysia()
+		.use(
+			swagger({
+				documentation: {
+					info: {
+						title: "Dev Commerce API",
+						version: "1.0.0",
+						description:
+							"REST API for managing products, providers, and categories.",
+					},
+					tags: [
+						{ name: "Products", description: "Product management endpoints" },
+						{ name: "Providers", description: "Provider management endpoints" },
+						{
+							name: "Categories",
+							description: "Category management endpoints",
+						},
+					],
+				},
+				path: "/swagger",
+				exclude: ["/swagger", "/swagger/json"],
+			}),
+		)
 		.onError(({ code, path, error, request }) => {
 			switch (code) {
 				case "VALIDATION":

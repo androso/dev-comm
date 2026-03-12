@@ -21,6 +21,14 @@ const parseProductPrice = <T extends Record<string, unknown>>(product: T) => {
 	};
 };
 
+const toProductDetail = (product: NonNullable<Awaited<ReturnType<typeof productRepository.findById>>>) => {
+	const { productProvidersTable, productsCategoriesTable, ...rest } = parseProductPrice(product);
+	return {
+		...rest,
+		providers: productProvidersTable.map((pp) => pp.provider),
+	};
+};
+
 export const productService = {
 	async delete(id: string) {
 		const deleted = await productRepository.delete(id);
@@ -48,7 +56,7 @@ export const productService = {
 			throw new NotFoundError("Product not found")
 		}
 
-		return updated;
+		return toProductDetail(updated);
 	},
 	async create(data: CreateProductPayload) {
 		const newData = {
@@ -57,17 +65,14 @@ export const productService = {
 		};
 		const product = await productRepository.create(newData);
 
-		return parseProductPrice(product);
+		return toProductDetail(product);
 	},
 	async getById(id: string) {
 		const product = await productRepository.findById(id);
 		if (!product) {
 			throw new NotFoundError("Product not found!");
 		}
-		return {
-			...parseProductPrice(product),
-			providers: product.productProvidersTable.map((pp) => pp.provider),
-		};
+		return toProductDetail(product);
 	},
 	async getAll(query: ProductQuery) {
 		const params = {

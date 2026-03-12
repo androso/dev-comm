@@ -1,4 +1,5 @@
 import { t } from "elysia";
+import { providerResponseDataSchema } from "../providers/provider.schema";
 
 export const createProductSchema = t.Object({
 	name: t.String({ minLength: 1 }),
@@ -29,6 +30,29 @@ export const productQuerySchema = t.Object({
 export const productParamsSchema = t.Object({
 	id: t.String({ format: "uuid" }),
 });
+
+export const productResponseDataSchema = t.Object({
+	id: t.String({ format: "uuid" }),
+	name: t.String(),
+	price: t.Number(),
+	description: t.Nullable(t.String()),
+	sku: t.Nullable(t.String()),
+	stockQuantity: t.Nullable(t.Integer()),
+	categoryId: t.Nullable(t.String({ format: "uuid" })),
+	imageUrl: t.Nullable(t.String()),
+	isActive: t.Boolean(),
+	createdAt: t.Date(),
+	updatedAt: t.Date(),
+});
+
+export const productDetailResponseSchema = t.Intersect([
+	productResponseDataSchema,
+	t.Object({
+		providers: t.Array(providerResponseDataSchema),
+	}),
+]);
+
+export const productListItemSchema = t.Partial(productResponseDataSchema);
 
 export type CreateProductPayload = typeof createProductSchema.static;
 export type UpdateProductPayload = typeof updateProductSchema.static;
