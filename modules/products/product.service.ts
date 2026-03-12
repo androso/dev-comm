@@ -10,6 +10,17 @@ const DEFAULT_FIELDS = "id,name,price,stockQuantity";
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
 
+const parseProductPrice = <T extends Record<string, unknown>>(product: T) => {
+	if (typeof product.price !== "string") {
+		return product;
+	}
+
+	return {
+		...product,
+		price: parseFloat(product.price),
+	};
+};
+
 export const productService = {
 	async delete(id: string) {
 		const deleted = await productRepository.delete(id);
@@ -46,10 +57,7 @@ export const productService = {
 		};
 		const product = await productRepository.create(newData);
 
-		return {
-			...product,
-			price: parseFloat(product.price),
-		};
+		return parseProductPrice(product);
 	},
 	async getById(id: string) {
 		const product = await productRepository.findById(id);
@@ -57,8 +65,7 @@ export const productService = {
 			throw new NotFoundError("Product not found!");
 		}
 		return {
-			...product,
-			price: parseFloat(product.price),
+			...parseProductPrice(product),
 			providers: product.productProvidersTable.map((pp) => pp.provider),
 		};
 	},
@@ -78,6 +85,9 @@ export const productService = {
 		};
 
 		const res = await productRepository.findAll(params);
-		return res;
+		return {
+			...res,
+			data: res.data.map((product) => parseProductPrice(product)),
+		};
 	},
 };
