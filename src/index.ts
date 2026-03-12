@@ -3,6 +3,7 @@ import { db } from "../db";
 import { productRoutes } from "../modules/products/product.routes";
 import { providerRoutes } from "../modules/providers/provider.routes";
 import { categoryRoutes } from "../modules/categories/category.routes";
+import { BadRequestError } from "../common/errors";
 
 try {
 	await db.execute("select 1");
@@ -34,6 +35,15 @@ try {
 						},
 					});
 				default:
+					if (error instanceof BadRequestError) {
+						return status(400, {
+							success: false,
+							error: {
+								code: "BAD_REQUEST",
+								message: error.message,
+							},
+						});
+					}
 					console.error("Unhandled error", {
 						code,
 						path,

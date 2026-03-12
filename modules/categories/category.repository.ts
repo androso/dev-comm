@@ -7,6 +7,7 @@ import {
 	CreateCategoryPayload,
 	UpdateCategoryPayload,
 } from "./category.schema";
+import { BadRequestError } from "../../common/errors";
 
 type CategoryFilters = {
 	nameLike?: string;
@@ -34,12 +35,32 @@ const buildSort = (sortMethod: string | undefined) => {
 	if (!sortMethod) return [];
 
 	const allColumns = getTableColumns(productsCategoriesTable);
-	return sortMethod.split(",").map((field) => {
-		const descending = field.startsWith("-");
-		const key = descending ? field.slice(1) : field;
-		const col = productsCategoriesTable[key as keyof typeof allColumns];
-		return descending ? desc(col) : asc(col);
-	});
+
+	const invalidFields: string[] = [];
+	const clauses = sortMethod
+		.split(",")
+		.map((field) => {
+			field = field.trim();
+			const descending = field.startsWith("-");
+			const key = descending ? field.slice(1) : field;
+			const col = allColumns[key as keyof typeof allColumns];
+
+			if (!col) {
+				invalidFields.push(key);
+				return null;
+			}
+
+			return descending ? desc(col) : asc(col);
+		})
+		.filter((clause) => clause !== null);
+
+	if (invalidFields.length > 0) {
+		throw new BadRequestError(
+			`Invalid sort field${invalidFields.length > 1 ? "s" : ""}: ${invalidFields.join(",")}`,
+		);
+	}
+
+	return clauses;
 };
 
 const buildFilters = (filters: CategoryFilters | undefined) => {
@@ -48,7 +69,9 @@ const buildFilters = (filters: CategoryFilters | undefined) => {
 	const conditions = [];
 
 	if (filters.nameLike) {
-		conditions.push(like(productsCategoriesTable.name, `%${filters.nameLike}%`));
+		conditions.push(
+			like(productsCategoriesTable.name, `%${filters.nameLike}%`),
+		);
 	}
 
 	return conditions.length ? and(...conditions) : undefined;
