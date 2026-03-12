@@ -1,5 +1,6 @@
 import { and, asc, desc, eq, getTableColumns, like, sql } from "drizzle-orm";
 import { db } from "../../db";
+import { BadRequestError } from "../../common/errors";
 import { providersTable } from "../../db/schema";
 import {
 	CreateProviderPayload,
@@ -34,12 +35,32 @@ const buildSort = (sortMethod: string | undefined) => {
 	if (!sortMethod) return [];
 
 	const allColumns = getTableColumns(providersTable);
-	return sortMethod.split(",").map((field) => {
-		const descending = field.startsWith("-");
-		const key = descending ? field.slice(1) : field;
-		const col = providersTable[key as keyof typeof allColumns];
-		return descending ? desc(col) : asc(col);
-	});
+
+	const invalidFields: string[] = [];
+	const clauses = sortMethod
+		.split(",")
+		.map((field) => {
+			field = field.trim();
+			const descending = field.startsWith("-");
+			const key = descending ? field.slice(1) : field;
+			const col = allColumns[key as keyof typeof allColumns];
+
+			if (!col) {
+				invalidFields.push(key);
+				return null;
+			}
+
+			return descending ? desc(col) : asc(col);
+		})
+		.filter((clause) => clause !== null);
+
+	if (invalidFields.length > 0) {
+		throw new BadRequestError(
+			`Invalid sort field${invalidFields.length > 1 ? "s" : ""}: ${invalidFields.join(",")}`,
+		);
+	}
+
+	return clauses;
 };
 
 const buildFilters = (filters: ProviderFilters | undefined) => {

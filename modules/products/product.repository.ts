@@ -16,6 +16,7 @@ import {
 	UpdateProductPayload,
 } from "./product.schema";
 import { productProvidersTable, productsTable } from "../../db/schema";
+import { BadRequestError } from "../../common/errors";
 
 type CreateProductRepoPayload = Omit<CreateProductPayload, "price"> & {
 	price: string;
@@ -58,12 +59,32 @@ const buildSort = (sortMethod: string | undefined) => {
 	if (!sortMethod) return [];
 
 	const allColumns = getTableColumns(productsTable);
-	return sortMethod.split(",").map((field) => {
-		const descending = field.startsWith("-");
-		const key = descending ? field.slice(1) : field;
-		const col = productsTable[key as keyof typeof allColumns];
-		return descending ? desc(col) : asc(col);
-	});
+
+	const invalidFields: string[] = [];
+	const clauses = sortMethod
+		.split(",")
+		.map((field) => {
+			field = field.trim();
+			const descending = field.startsWith("-");
+			const key = descending ? field.slice(1) : field;
+			const col = allColumns[key as keyof typeof allColumns];
+
+			if (!col) {
+				invalidFields.push(key);
+				return null;
+			}
+
+			return descending ? desc(col) : asc(col);
+		})
+		.filter((clause) => clause !== null);
+
+	if (invalidFields.length > 0) {
+		throw new BadRequestError(
+			`Invalid sort field${invalidFields.length > 1 ? "s" : ""}: ${invalidFields.join(",")}`,
+		);
+	}
+
+	return clauses;
 };
 
 const buildFilters = (filters: ProductFilters | undefined) => {
