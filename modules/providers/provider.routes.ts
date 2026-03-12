@@ -65,7 +65,7 @@ export const providerRoutes = new Elysia({ prefix: "/providers" })
 	.delete(
 		"/:id",
 		async ({ params: { id } }) => {
-			const deleted = await providerService.delete(id);
+			await providerService.delete(id);
 			return new Response(null, { status: 204 });
 		},
 		{

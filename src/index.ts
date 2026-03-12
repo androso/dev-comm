@@ -49,10 +49,6 @@ try {
 						},
 					});
 			}
-
-			if (error) {
-				console.error(error);
-			}
 		})
 		.use(productRoutes)
 		.use(providerRoutes);
