@@ -7,6 +7,11 @@ import { BadRequestError } from "../common/errors";
 
 try {
 	await db.execute("select 1");
+	const apiV1 = new Elysia({ prefix: "/api/v1" })
+		.use(productRoutes)
+		.use(providerRoutes)
+		.use(categoryRoutes);
+
 	const app = new Elysia()
 		.onError(({ code, path, error, request }) => {
 			switch (code) {
@@ -61,9 +66,7 @@ try {
 					});
 			}
 		})
-		.use(productRoutes)
-		.use(providerRoutes)
-		.use(categoryRoutes);
+		.use(apiV1);
 
 	app.listen(3000);
 	console.log("App working on port: ", app.server?.port);
