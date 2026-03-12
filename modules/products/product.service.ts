@@ -53,7 +53,9 @@ export const productService = {
 	},
 	async getById(id: string) {
 		const product = await productRepository.findById(id);
-		if (!product) return null;
+		if (!product) {
+			throw new NotFoundError("Product not found!");
+		}
 		return {
 			...product,
 			price: parseFloat(product.price),

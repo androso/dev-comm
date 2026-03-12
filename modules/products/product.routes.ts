@@ -23,15 +23,8 @@ export const productRoutes = new Elysia({ prefix: "/products" })
 	)
 	.get(
 		"/:id",
-		async ({ params: { id }, set }) => {
+		async ({ params: { id } }) => {
 			const product = await productService.getById(id);
-			if (!product) {
-				set.status = 404;
-				return {
-					success: false,
-					error: { code: "NOT_FOUND", message: "Product not found" },
-				};
-			}
 
 			return {
 				success: true,
