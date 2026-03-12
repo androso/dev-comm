@@ -2,6 +2,7 @@ import { Elysia, status } from "elysia";
 import { db } from "../db";
 import { productRoutes } from "../modules/products/product.routes";
 import { providerRoutes } from "../modules/providers/provider.routes";
+import { categoryRoutes } from "../modules/categories/category.routes";
 
 try {
 	await db.execute("select 1");
@@ -51,7 +52,8 @@ try {
 			}
 		})
 		.use(productRoutes)
-		.use(providerRoutes);
+		.use(providerRoutes)
+		.use(categoryRoutes);
 
 	app.listen(3000);
 	console.log("App working on port: ", app.server?.port);
