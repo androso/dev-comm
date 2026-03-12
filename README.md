@@ -1,8 +1,10 @@
-# Inventory Management API
+# Inventory Management
 
-REST API for managing products, providers, and categories.
+Full-stack inventory management application with a REST API backend and a React dashboard frontend.
 
 ## Tech Stack
+
+### Backend
 
 - **Runtime:** [Bun](https://bun.sh/)
 - **Framework:** [Elysia](https://elysiajs.com/)
@@ -12,9 +14,19 @@ REST API for managing products, providers, and categories.
 - **Documentation:** Swagger/OpenAPI (via `@elysiajs/swagger`)
 - **Language:** TypeScript
 
+### Frontend
+
+- **Framework:** [React](https://react.dev/) 18 + TypeScript
+- **Bundler:** [Vite](https://vite.dev/)
+- **Styling:** [TailwindCSS](https://tailwindcss.com/) v4
+- **Data Fetching:** [TanStack React Query](https://tanstack.com/query) v5
+- **Routing:** [React Router](https://reactrouter.com/) v7
+- **Forms:** [React Hook Form](https://react-hook-form.com/)
+
 ## Prerequisites
 
 - [Bun](https://bun.sh/) v1.0+
+- [Node.js](https://nodejs.org/) v18+ (for the frontend)
 - PostgreSQL database (local or hosted — [Neon](https://neon.tech/) free tier works)
 
 ## Installation
@@ -44,7 +56,7 @@ DATABASE_URL=postgresql://<user>:<password>@<host>/<database>?sslmode=require
 bunx drizzle-kit migrate
 ```
 
-5. Start the development server:
+5. Start the backend development server:
 
 ```bash
 bun run dev
@@ -52,7 +64,19 @@ bun run dev
 
 The API will be available at `http://localhost:3000`.
 
+6. Install and start the frontend (in a separate terminal):
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173`. It proxies API requests to the backend automatically.
+
 ## Project Structure
+
+### Backend
 
 ```
 ├── src/
@@ -85,6 +109,30 @@ The API will be available at `http://localhost:3000`.
 ```
 
 Each module follows a layered architecture: **Routes → Service → Repository**. Routes handle HTTP concerns and validation, services contain business logic, and repositories manage database access.
+
+### Frontend
+
+```
+frontend/
+├── vite.config.ts             # Vite config with Tailwind plugin and API proxy
+├── src/
+│   ├── main.tsx               # React root with QueryClientProvider
+│   ├── App.tsx                # Router setup with all routes
+│   ├── index.css              # TailwindCSS import
+│   ├── types/                 # TypeScript interfaces for API entities
+│   ├── api/                   # Typed fetch wrapper and resource API functions
+│   ├── hooks/                 # React Query hooks (queries + mutations)
+│   ├── components/
+│   │   ├── layout/            # AppLayout (sidebar + content) and Sidebar
+│   │   └── ui/                # Reusable components (DataTable, Pagination, Modal, etc.)
+│   └── pages/
+│       ├── DashboardPage.tsx  # Summary cards with resource counts
+│       ├── products/          # Product list, detail, and form pages
+│       ├── providers/         # Provider list, detail, and form pages
+│       └── categories/        # Category list, detail, and form pages
+```
+
+The frontend uses a typed API client layer that wraps `fetch` and maps the backend's `{ success, data, error }` envelope into typed responses. TanStack React Query manages server state with a query key factory pattern for precise cache invalidation.
 
 ## Database Design
 
@@ -227,6 +275,46 @@ The collection includes example request bodies and query parameters for all CRUD
 | Variable     | Description                  | Required |
 | ------------ | ---------------------------- | -------- |
 | DATABASE_URL | PostgreSQL connection string | Yes      |
+
+## Frontend
+
+The React frontend provides a complete dashboard for managing inventory data.
+
+### Pages
+
+| Route                  | Page                | Description                                     |
+| ---------------------- | ------------------- | ----------------------------------------------- |
+| `/`                    | Dashboard           | Summary cards with total counts per resource    |
+| `/products`            | Product List        | Searchable, filterable table with pagination    |
+| `/products/new`        | Create Product      | Form with category dropdown and provider select |
+| `/products/:id`        | Product Detail      | Full product view with linked providers         |
+| `/products/:id/edit`   | Edit Product        | Pre-populated edit form                         |
+| `/providers`           | Provider List       | Searchable table with pagination                |
+| `/providers/new`       | Create Provider     | Provider creation form                          |
+| `/providers/:id`       | Provider Detail     | Full provider view                              |
+| `/providers/:id/edit`  | Edit Provider       | Pre-populated edit form                         |
+| `/categories`          | Category List       | Searchable table with pagination                |
+| `/categories/new`      | Create Category     | Category creation form                          |
+| `/categories/:id`      | Category Detail     | Full category view                              |
+| `/categories/:id/edit` | Edit Category       | Pre-populated edit form                         |
+
+### Features
+
+- **Search and filtering** — Debounced search by name, price range filters for products
+- **Pagination** — Server-side pagination with page navigation controls
+- **CRUD operations** — Create, view, edit, and delete for all resources with confirmation dialogs
+- **Form validation** — Client-side validation via React Hook Form with server-side API error mapping to individual fields
+- **Responsive layout** — Collapsible sidebar navigation for mobile screens
+- **URL state** — Filters and pagination are stored in URL search params for bookmarkability and back/forward navigation
+
+### Building for Production
+
+```bash
+cd frontend
+npm run build
+```
+
+Static files are output to `frontend/dist/` and can be served by any static file server or reverse proxy.
 
 ## Known Limitations
 
