@@ -2,6 +2,9 @@
 
 Full-stack inventory management application with a REST API backend and a React dashboard frontend.
 
+# Deployed URL 
+[https://dev-comm-production.up.railway.app/](https://dev-comm-production.up.railway.app/providers)
+
 ## Tech Stack
 
 ### Backend

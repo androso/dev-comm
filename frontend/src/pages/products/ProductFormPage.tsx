@@ -84,6 +84,7 @@ export function ProductFormPage() {
         ? Number(formData.stockQuantity)
         : undefined,
       categoryId: formData.categoryId || undefined,
+      imageUrl: formData.imageUrl || undefined,
       providerIds: selectedProviderIds.length > 0 ? selectedProviderIds : undefined,
     };
 
