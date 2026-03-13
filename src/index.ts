@@ -1,6 +1,7 @@
 import { Elysia, ValidationError, status } from "elysia";
 import type { ErrorDetail } from "../common/errors";
 import { swagger } from "@elysiajs/swagger";
+import { staticPlugin } from "@elysiajs/static";
 import { db } from "../db";
 import { productRoutes } from "../modules/products/product.routes";
 import { providerRoutes } from "../modules/providers/provider.routes";
@@ -105,7 +106,9 @@ try {
 					});
 			}
 		})
-		.use(apiV1);
+		.use(apiV1)
+	.use(staticPlugin({ assets: "frontend/dist", prefix: "/" }))
+	.get("/*", () => Bun.file("frontend/dist/index.html"));
 
 	app.listen(3000);
 	console.log("App working on port: ", app.server?.port);
