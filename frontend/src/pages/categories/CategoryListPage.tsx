@@ -32,6 +32,7 @@ export function CategoryListPage() {
   const query = {
     page,
     limit: 10,
+    fields: "id,name,description",
     ...(search && { "name[like]": search }),
   };
 

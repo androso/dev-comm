@@ -59,7 +59,13 @@ DATABASE_URL=postgresql://<user>:<password>@<host>/<database>?sslmode=require
 bunx drizzle-kit migrate
 ```
 
-5. Start the backend development server:
+5. (Optional) Seed the database with sample data:
+
+```bash
+bun run seed
+```
+
+6. Start the backend development server:
 
 ```bash
 bun run dev
@@ -67,7 +73,7 @@ bun run dev
 
 The API will be available at `http://localhost:3000`.
 
-6. Install and start the frontend (in a separate terminal):
+7. Install and start the frontend (in a separate terminal):
 
 ```bash
 cd frontend
@@ -324,4 +330,4 @@ Static files are output to `frontend/dist/` and can be served by any static file
 - No authentication or authorization
 - No rate limiting
 - Price filtering uses string comparison at the database level (Drizzle decimal type)
-- No database seeding script included — data must be created via the API
+- No authentication or authorization
