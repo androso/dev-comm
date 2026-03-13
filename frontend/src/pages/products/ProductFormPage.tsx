@@ -47,7 +47,7 @@ export function ProductFormPage() {
     reset,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<ProductFormValues>();
+  } = useForm<ProductFormValues>({ defaultValues: { isActive: true } });
 
   useEffect(() => {
     if (data?.data) {
