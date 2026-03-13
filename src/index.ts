@@ -107,6 +107,7 @@ try {
 			}
 		})
 		.use(apiV1)
+	.get("/", () => Bun.file("frontend/dist/index.html"))
 	.use(staticPlugin({ assets: "frontend/dist", prefix: "/" }))
 	.get("/*", () => Bun.file("frontend/dist/index.html"));
 
